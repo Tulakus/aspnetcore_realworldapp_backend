@@ -1,0 +1,16 @@
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\realworldapp.deps.json
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\realworldapp.runtimeconfig.json
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\realworldapp.runtimeconfig.dev.json
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\realworldapp.dll
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\realworldapp.pdb
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.RazorAssemblyInfo.cache
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.RazorAssemblyInfo.cs
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.AssemblyInfoInputs.cache
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.AssemblyInfo.cs
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.RazorTargetAssemblyInfo.cache
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.dll
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.pdb
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\appsettings.Development.json
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\appsettings.json
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\bin\Debug\netcoreapp2.1\Properties\launchSettings.json
+C:\Users\Martin\Documents\GitHub\aspnetcore_realworldapp_backend\realworldapp\obj\Debug\netcoreapp2.1\realworldapp.csprojAssemblyReference.cache
