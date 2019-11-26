@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\Security\CurrentUser\" />
     <Folder Include="Models\NewFolder\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

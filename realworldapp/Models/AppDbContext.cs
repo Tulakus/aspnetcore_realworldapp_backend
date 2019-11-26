@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using realworldapp.Infrastructure.Security.Session;
 using realworldapp.Models;
 
 namespace realworldapp.Models
@@ -14,12 +15,16 @@ namespace realworldapp.Models
         {
         }
 
+        public UserInfo UserInfo { get; set; }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ArticleTag> ArticleTags { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<UserFollower> Followers { get; set; }
+        public DbSet<ArticleUserFavorited> ArticlesFavoritedBy { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ArticleTag>(entity =>
@@ -52,6 +57,18 @@ namespace realworldapp.Models
                 entity.HasOne(item => item.Follower).WithMany(relation => relation.Followers)
                     .HasForeignKey(key => key.FollowerId);
 
+            });
+
+            modelBuilder.Entity<ArticleUserFavorited>(entity =>
+            {
+                entity.HasKey(key => new
+                {
+                    key.ArticleId,
+                    key.ProfileId
+                });
+
+                entity.HasOne(item => item.Article).WithMany(relation => relation.FavoritedByUser).HasForeignKey(key => key.ProfileId);
+                entity.HasOne(item => item.FavoritedBy).WithMany(relation => relation.FavoritedArticles).HasForeignKey(key => key.ArticleId);
             });
         }
         public DbSet<Comment> Comments { get; set; }

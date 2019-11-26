@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using realworldapp.Handlers.Profiles.Commands;
 using realworldapp.Handlers.Profiles.Response;
-using realworldapp.Infrastructure.Security.CurrentUser;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Profiles
@@ -12,12 +11,10 @@ namespace realworldapp.Handlers.Profiles
     public class FollowProfileHandler: IRequestHandler<FollowUserCommand, ProfileWrapper>
     {
         private AppDbContext _context;
-        private readonly ICurrentUserAccessor _currentUserAccessor;
 
-        public FollowProfileHandler(AppDbContext context, ICurrentUserAccessor currentUserAccessor)
+        public FollowProfileHandler(AppDbContext context)
         {
             _context = context;
-            _currentUserAccessor = currentUserAccessor;
         }
 
 
@@ -26,10 +23,11 @@ namespace realworldapp.Handlers.Profiles
             if (string.IsNullOrWhiteSpace(command.Username))
                 return null;
 
-            var currentUserName = _currentUserAccessor.GetCurrentUser();
+            var currentUserName = _context.UserInfo.Username;
+            var usersQueryable = _context.Users.Include(i => i.Profile);
 
-            var currentUser = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Username == currentUserName, cancellationToken);
-            var followedUser = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Username == command.Username, cancellationToken);
+            var currentUser = await usersQueryable.FirstOrDefaultAsync(i => i.Username == currentUserName, cancellationToken);
+            var followedUser = await usersQueryable.FirstOrDefaultAsync(i => i.Username == command.Username, cancellationToken);
 
             if (currentUser == default || followedUser == default)
                 return null;

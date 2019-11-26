@@ -12,8 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using realworldapp.Infrastructure.Security;
-using realworldapp.Infrastructure.Security.CurrentUser;
 using realworldapp.Infrastructure.Security.JWT;
+using realworldapp.Infrastructure.Security.Session;
 using realworldapp.Models;
 
 namespace realworldapp
@@ -34,12 +34,11 @@ namespace realworldapp
 
             services.AddDbContext<AppDbContext>(opt =>
                 opt.UseInMemoryDatabase("TodoList"));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options => { options.Filters.Add(typeof(SessionFilter)); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddSession();
             services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
             services.AddScoped<IJwt, Jwt>();
-            services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options => options.TokenValidationParameters = new TokenValidationParameters
