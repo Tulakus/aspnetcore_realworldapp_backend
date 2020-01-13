@@ -22,28 +22,26 @@ namespace realworldapp.Handlers.Comments
             if (string.IsNullOrEmpty(command.Slug))
                 return null;
 
-            //var article = await _context.Articles.FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
-            var article = await _context.Articles.FirstAsync(cancellationToken);
+            var article = await _context.Articles.Include(i => i.Comments)
+                .FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
 
             if (article == default(Article))
                 return null;
 
             if (command.Comment == default(CommentData) || string.IsNullOrEmpty(command.Comment.Body))
                 return null;
-            var author = await _context.Users.FirstAsync(cancellationToken);
+            var author = await _context.Profiles.GetProfile(_context.UserInfo, cancellationToken);
 
             var newComment = new Comment
             {
                 Body = command.Comment.Body,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Article = article,
-                Author = author
-
+                Author = author,
+                Article = article
             };
 
-            _context.Comments.Add(newComment);
-
+            await _context.Comments.AddAsync(newComment, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             return new CommentWrapper(newComment);

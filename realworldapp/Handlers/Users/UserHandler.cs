@@ -29,16 +29,19 @@ namespace realworldapp.Handlers.Users
         public async Task<UserWrapper> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
         {
             var userData = command.User;
-            var user = await _context.Users.FirstOrDefaultAsync(i => i.Email == userData.Email, cancellationToken);
+
+            var user = await _context.Users.FirstOrDefaultAsync(i => i.Login == userData.Email, cancellationToken);
             if (user != default(User))
                 return null; // todo - return already registered
 
             user = new User
             {
-                Username = userData.Username,
-                Email = userData.Email,
+                Login = userData.Email,
                 Password = _passwordHashProvider.HashPassword(userData.Password),
-                Profile = new Profile(),
+                Profile = new Profile(){
+                    Username = userData.Username,
+                    Email = userData.Email
+                },
             };
 
             var claims = GetUserClaims(user);
@@ -53,7 +56,7 @@ namespace realworldapp.Handlers.Users
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, user.Email), new Claim(CustomClaims.UserName, user.Username),
+                new Claim(ClaimTypes.Email, user.Login), new Claim(CustomClaims.UserName, user.Profile.Username),
                 new Claim(CustomClaims.UserId, user.UserId.ToString())
             };
             return claims;
@@ -62,7 +65,7 @@ namespace realworldapp.Handlers.Users
         public async Task<UserWrapper> Handle(LoginUserCommand command, CancellationToken cancellationToken)
         {
             var commandUser = command.User;
-            var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Email == commandUser.Email, cancellationToken);
+            var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Login == commandUser.Email, cancellationToken);
             if (user is default(User))
                 return null; // todo - return already registered
 
@@ -82,18 +85,20 @@ namespace realworldapp.Handlers.Users
         public async Task<UserWrapper> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
         {
             var commandUser = command.User;
-            var currentUser = _context.UserInfo.Username;
+            var currentUser = _context.UserInfo;
+            if (currentUser.Username != command.User.Username)
+                return null; // todo - return different user
 
-            if (string.IsNullOrWhiteSpace(currentUser))
-                throw new ArgumentException("Invalid user");
+            if (string.IsNullOrWhiteSpace(commandUser.Username))
+                throw new ArgumentException("Invalid command");
 
-            var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Username == currentUser, cancellationToken);
+            var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Profile.Username == currentUser.Username, cancellationToken);
 
             if (user == default)
                 return null; // todo - return not found
 
-            user.Username = commandUser.Username ?? user.Username;
-            user.Email = commandUser.Email ?? user.Email;
+            user.Profile.Username = commandUser.Username ?? user.Profile.Username;
+            user.Login = commandUser.Email ?? user.Login;
             user.Profile.Bio = commandUser.Bio ?? user.Profile.Bio;
             user.Profile.Image = commandUser.Image ?? user.Profile.Image;
 
@@ -119,7 +124,7 @@ namespace realworldapp.Handlers.Users
                 throw new ArgumentException("Invalid user");
 
             var user = await _context.Users.AsNoTracking().Include(i => i.Profile)
-                .FirstOrDefaultAsync(i => i.Username == currentUser, cancellationToken);
+                .FirstOrDefaultAsync(i => i.Profile.Username == currentUser, cancellationToken);
 
             return new UserWrapper(user);
         }

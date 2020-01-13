@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using realworldapp.Handlers.Profiles.Response;
-using realworldapp.Handlers.Tags.Response;
 
 namespace realworldapp.Handlers.Profiles.Commands
 {

@@ -27,15 +27,15 @@ namespace realworldapp.Handlers.Profiles
 
             var usersQueryable = _context.Users.Include(i => i.Profile);
 
-            var currentUser = await usersQueryable.FirstOrDefaultAsync(i => i.Username == currentUserName, cancellationToken);
-            var unfollowedUser = await usersQueryable.FirstOrDefaultAsync(i => i.Username == command.Username, cancellationToken);
+            var currentUser = await usersQueryable.FirstOrDefaultAsync(i => i.Profile.Username == currentUserName, cancellationToken);
+            var unfollowedUser = await usersQueryable.FirstOrDefaultAsync(i => i.Profile.Username == command.Username, cancellationToken);
 
             if (currentUser == default || unfollowedUser == default)
                 return null;
 
             var follower = _context.Followers.Include(i => i.Followed)
-                .Include(i => i.Follower)
-                .FirstOrDefault(i => i.Followed == unfollowedUser.Profile && i.Follower == currentUser.Profile);
+                .Include(i => i.Following)
+                .FirstOrDefault(i => i.Followed == unfollowedUser.Profile && i.Following == currentUser.Profile);
 
             if (follower == default)
                 return null;

@@ -6,7 +6,7 @@ namespace realworldapp.Models
     {
         public int FollowedId { get; set; }
         public Profile Followed { get; set; }
-        public int FollowerId { get; set; }
-        public Profile Follower { get; set; }
+        public int FollowingId { get; set; }
+        public Profile Following { get; set; }
     }
 }

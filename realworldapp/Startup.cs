@@ -31,14 +31,14 @@ namespace realworldapp
         public void ConfigureServices(IServiceCollection services)
         {
             IdentityModelEventSource.ShowPII = true;
-
-            services.AddDbContext<AppDbContext>(opt =>
-                opt.UseInMemoryDatabase("TodoList"));
+            services.AddDbContextPool<AppDbContext>(opt =>
+                opt.UseSqlServer(Configuration.GetConnectionString("RealWorldApp")));
             services.AddMvc(options => { options.Filters.Add(typeof(SessionFilter)); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddSession();
             services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
             services.AddScoped<IJwt, Jwt>();
+            services.AddScoped<ISlugGenerator, SlugGenerator>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options => options.TokenValidationParameters = new TokenValidationParameters
@@ -56,10 +56,24 @@ namespace realworldapp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                context.Database.EnsureCreated();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    if (true) //!serviceScope.ServiceProvider.GetService<AppDbContext>().AllMigrationsApplied())
+                    {
+                        // serviceScope.ServiceProvider.GetService<ApiContext>().Database.Migrate();
+                        serviceScope.ServiceProvider.GetService<AppDbContext>().EnsureDatabaseSeeded();
+                    }
+                }
             }
             else
             {

@@ -50,40 +50,6 @@ namespace realworldapp.Controllers
             return Ok(comment);
         }
 
-        // PUT: api/Comments/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment([FromRoute] ulong id, [FromBody] Comment comment)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != comment.CommentId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(comment).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // POST: api/Comments
         [HttpPost]
@@ -94,27 +60,13 @@ namespace realworldapp.Controllers
         }
 
         // DELETE: api/Comments/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteComment([FromRoute] ulong id)
+        [HttpDelete("{commentId}")]
+        public async Task<CommentWrapper> DeleteComment([FromRoute] string slug, [FromRoute] int commentId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var comment = await _context.Comments.FindAsync(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-
-            return Ok(comment);
+            return await _mediator.Send(new DeleteCommentCommand(){CommentId = commentId, Slug = slug}, new CancellationToken());
         }
 
-        private bool CommentExists(ulong id)
+        private bool CommentExists(int id)
         {
             return _context.Comments.Any(e => e.CommentId == id);
         }

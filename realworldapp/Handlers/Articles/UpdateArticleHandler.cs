@@ -21,15 +21,29 @@ namespace realworldapp.Handlers.Articles
 
         public async Task<ArticleDetailWrapper> Handle(UpdateArticleCommand command, CancellationToken cancellationToken)
         {
-            // todo add check - author
             var changeCommand = command.Article;
+            if (string.IsNullOrWhiteSpace(changeCommand.Slug))
+            {
+                return null;// todo dodelat
+            }
+
             var articleTagList = changeCommand.TagList?.Distinct().ToList();
-            var dtb = _context.Articles.Include(i => i.ArticleTags).ThenInclude(i => i.Tag);
-            var article = await dtb.FirstOrDefaultAsync(cancellationToken);
+
+            var articleQueryable = _context.Articles
+                .Include(i => i.ArticleTags)
+                .ThenInclude(i => i.Tag)
+                .Include(i => i.Author);
+
+            var article = await articleQueryable.FirstOrDefaultAsync(i => i.Slug == changeCommand.Slug, cancellationToken);
 
             if (article == default(Article))
             {
                 return null; // todo add invalid/notfound result
+            }
+
+            if (article.Author.ProfileId != _context.UserInfo.ProfileId)
+            {
+                return null; // todo return unauthorized
             }
 
             if (articleTagList == null || !articleTagList.Any())
@@ -38,14 +52,15 @@ namespace realworldapp.Handlers.Articles
                 {
                     _context.ArticleTags.RemoveRange(article.ArticleTags);
                 }
-            } else
+            }
+            else
             {
                 var list = article.ArticleTags.Select(i => i.Tag.Name).ToList();
                 var areEqual = list.All(articleTagList.Contains) && list.Count == articleTagList.Count;
                 if (!areEqual)
                 {
                     var removed = list.Except(articleTagList).ToList();
-                    var  added = articleTagList.Except(list).ToList();
+                    var added = articleTagList.Except(list).ToList();
                     if (added.Any())
                     {
                         await HandleAddedTags(added, article);
@@ -55,11 +70,8 @@ namespace realworldapp.Handlers.Articles
                     {
                         await HandleRemovedTags(removed, article);
                     }
-
                 }
-
             }
-            
 
             if (!string.IsNullOrEmpty(changeCommand.Title))
                 article.Title = changeCommand.Title;
@@ -69,10 +81,10 @@ namespace realworldapp.Handlers.Articles
 
             if (!string.IsNullOrEmpty(changeCommand.Body))
                 article.Body = changeCommand.Body;
-            
+
             article.UpdatedAt = DateTime.UtcNow;
 
-            // _context.ArticleTags.AddRange(articleTags);
+            _context.Update(article);
             await _context.SaveChangesAsync(cancellationToken);
 
             return new ArticleDetailWrapper(article);

@@ -1,10 +1,11 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using realworldapp.Error;
 using realworldapp.Models;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace realworldapp.Handlers.Articles
 {
@@ -16,15 +17,22 @@ namespace realworldapp.Handlers.Articles
         {
             _context = context;
         }
+
         public async Task<Unit> Handle(DeleteArticleCommand command, CancellationToken cancellationToken)
         {
-            var article = await _context.Articles.Include(i => i.ArticleTags).ThenInclude(i => i.Tag).FirstAsync(cancellationToken);
+            var article = await _context.Articles
+                .FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
+
             if (article == null)
             {
                 throw new NotFoundCommandException(new { Article = "not found" });
             }
-            
-            _context.ArticleTags.RemoveRange(article.ArticleTags);
+
+            if(article.Author.ProfileId != _context.UserInfo.ProfileId)
+            {
+                throw new NotFoundCommandException(new { Article = "not found" }); // todo unauthorized
+            }
+
             _context.Articles.Remove(article);
             await _context.SaveChangesAsync(cancellationToken);
 

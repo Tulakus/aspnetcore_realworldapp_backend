@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using realworldapp.Handlers.Tags.Response;
 using realworldapp.Handlers.Users.Responses;
 
 namespace realworldapp.Models
@@ -9,16 +10,16 @@ namespace realworldapp.Models
     {
         public ArticleDetailDto(Article article)
         {
-            Author = new UserDto(article.Author);
+            Author = new ProfileDto(article.Author);
             Description = article.Description;
             Title = article.Title;
             Body = article.Body;
-            CreatedAt = article.CreatedAt;
-            UpdatedAt = article.UpdatedAt;
+            CreatedAt = DateTime.SpecifyKind(article.CreatedAt, DateTimeKind.Utc);// because date materialized from database has unspecified kind -> needs to specify correct kind
+            UpdatedAt = DateTime.SpecifyKind(article.UpdatedAt, DateTimeKind.Utc);
             Slug = article.Slug;
             TagList = article.ArticleTags.Select(i => i.Tag.Name).ToList();
             Favorited = article.Favorited;
-            FavoritesCount = article.FavoritesCount;
+            FavoritesCount = article.FavoritedArticles?.Count ?? 0;
         }
 
         public string Slug { get; set; }
@@ -29,8 +30,8 @@ namespace realworldapp.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool Favorited { get; set; }
-        public uint FavoritesCount { get; set; }
-        public UserDto Author { get; set; }
+        public int FavoritesCount { get; set; }
+        public ProfileDto Author { get; set; }
 
     }
 }

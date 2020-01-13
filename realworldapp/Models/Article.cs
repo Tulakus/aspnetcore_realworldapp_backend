@@ -15,14 +15,14 @@ namespace realworldapp.Models
         public string Description { get; set; }
         public string Body { get; set; }
         [JsonIgnore]
-        public virtual ICollection<ArticleTag> ArticleTags { get; set; }
+        public ICollection<ArticleTag> ArticleTags { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool Favorited { get; set; }
-        public uint FavoritesCount { get; set; }
+        public int FavoritesCount { get; set; }
 
-        public int UserId { get; set; }
-        public User Author { get; set; } 
+        public Profile Author { get; set; } 
         public ICollection<Comment> Comments { get; set; }
+        public ICollection<ArticleProfile> FavoritedArticles { get; set; }
     }
 }

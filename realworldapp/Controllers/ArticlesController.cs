@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using realworldapp.Handlers.Articles;
 using realworldapp.Handlers.Articles.Commands;
 using realworldapp.Handlers.Articles.Response;
 using realworldapp.Models;
+using System.Threading.Tasks;
 
 namespace realworldapp.Controllers
 {
@@ -18,66 +13,73 @@ namespace realworldapp.Controllers
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IMediator _mediator;
 
-        public ArticlesController(AppDbContext context, IMediator mediator)
+        public ArticlesController(IMediator mediator)
         {
-            _context = context;
             _mediator = mediator;
         }
 
         // GET: api/Articles
         [HttpGet]
-        public async Task<ArticleListWrapper> GetArticles()
+        public async Task<ArticleListWrapper> GetArticles([FromQuery] QueryArticlesCommand command, [FromRoute] string slug)
         {
-            return await _mediator.Send(new QueryArticlesCommand());
+            return await _mediator.Send(command);
         }
 
-        // GET: api/Articles/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetArticle([FromRoute] string id)
+        [HttpGet("{slug}")]
+        public async Task<ArticleDetailWrapper> GetArticle([FromRoute] string slug)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            return await _mediator.Send(new QueryArticleCommand(){Slug = slug});
+        }
 
-            var article = await _context.Articles.FindAsync(id);
-
-            if (article == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(article);
+        [HttpGet("feed")]
+        [Authorize]
+        public async Task<ArticleListWrapper> GetFeedArticles()
+        {
+            return await _mediator.Send(new QueryArticlesFeedCommand());
         }
 
         // PUT: api/Articles/5
-        [HttpPut("{slug}")]
+        [HttpPut("{slug}")]//todo zkontrolovat
+        [Authorize]
         public async Task<ArticleDetailWrapper> UpdateArticle([FromRoute] string slug, [FromBody] UpdateArticleCommand command)
         {
-            return await _mediator.Send(command, new CancellationToken());
+            command.Article.Slug = slug;
+            return await _mediator.Send(command);
         }
 
         // POST: api/Articles
         [HttpPost]
-        public async Task<ArticleDetailWrapper> PostArticle([FromBody]  CreateArticleCommand command)
+        [Authorize]
+        public async Task<ArticleDetailWrapper> PostArticle([FromBody] CreateArticleCommand command)
         {
-            var resp =  await _mediator.Send(command, new CancellationToken());
+            var resp = await _mediator.Send(command);
             return resp;
         }
 
         // DELETE: api/Articles/5
         [HttpDelete("{slug}")]
+        [Authorize]
         public async Task<Unit> DeleteArticle([FromRoute] string slug)
         {
             return await _mediator.Send(new DeleteArticleCommand(slug));
         }
 
-        private bool ArticleExists(string id)
+        // DELETE: api/Articles/5
+        [HttpPost("{slug}/favorite")]
+        [Authorize]
+        public async Task<ArticleDetailWrapper> FavoriteArticle([FromRoute] FavoriteArticleCommand command)
         {
-            return _context.Articles.Any(e => e.Slug == id);
+            return await _mediator.Send(command);
+        }
+
+        // DELETE: api/Articles/5
+        [HttpDelete("{slug}/favorite")]
+        [Authorize]
+        public async Task<ArticleDetailWrapper> UnfavoriteArticle([FromRoute] UnfavoriteArticleCommand command)
+        {
+            return await _mediator.Send(command);
         }
     }
 }

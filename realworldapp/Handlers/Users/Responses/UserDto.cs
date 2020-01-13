@@ -4,16 +4,19 @@ namespace realworldapp.Handlers.Users.Responses
 {
     public class UserDto
     {
-        public UserDto(User user)
+        public UserDto(Profile userProfile, string token)
         {
-            Name = user.Username;
-            Email = user.Email;
-            Image = user.Profile.Image;
-            Bio = user.Profile.Bio;
-            Token = user.Token;
+            Name = userProfile.Username;
+            Email = userProfile.Email;
+            Image = userProfile.Image;
+            Bio = userProfile.Bio;
+            Slug = userProfile.Slug;
+            Token = token;
+            Username = userProfile.Username;
         }
 
         public string Slug { get; set; }
+        public string Username { get; set; }
 
         public string Name { get; set; }
         public string Email { get; set; }

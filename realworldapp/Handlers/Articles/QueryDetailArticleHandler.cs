@@ -9,7 +9,7 @@ namespace realworldapp.Handlers.Articles
 {
     public class QueryDetailArticleHandler : IRequestHandler<QueryDetailArticleCommand, ArticleDetailWrapper>
     {
-        private AppDbContext _context;
+        private readonly AppDbContext _context;
 
         public QueryDetailArticleHandler(AppDbContext context)
         {

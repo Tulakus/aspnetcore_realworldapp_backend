@@ -7,10 +7,12 @@ namespace realworldapp.Handlers.Articles.Response
     public class ArticleListWrapper
     {
         public IEnumerable<ArticleDetailDto> Articles { get; private set; }
+        public int ArticlesCount { get; set; }
 
-        public ArticleListWrapper(IEnumerable<Article> articles)
+        public ArticleListWrapper(IList<Article> articles)
         {
             Articles = articles.Select(i => new ArticleDetailDto(i));
+            ArticlesCount = articles.Count();
         }
 
     }

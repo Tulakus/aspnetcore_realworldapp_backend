@@ -6,7 +6,7 @@ namespace realworldapp.Handlers.Users.Responses
     {
         public UserWrapper(User user)
         {
-            User = new UserDto(user);
+            User = new UserDto(user.Profile, user.Token);
         }
         public UserDto User { get; set; }
     }

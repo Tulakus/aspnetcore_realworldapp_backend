@@ -26,8 +26,8 @@ namespace realworldapp.Handlers.Profiles
             var currentUserName = _context.UserInfo.Username;
             var usersQueryable = _context.Users.Include(i => i.Profile);
 
-            var currentUser = await usersQueryable.FirstOrDefaultAsync(i => i.Username == currentUserName, cancellationToken);
-            var followedUser = await usersQueryable.FirstOrDefaultAsync(i => i.Username == command.Username, cancellationToken);
+            var currentUser = await usersQueryable.FirstOrDefaultAsync(i => i.Profile.Username == currentUserName, cancellationToken);
+            var followedUser = await usersQueryable.FirstOrDefaultAsync(i => i.Profile.Username == command.Username, cancellationToken);
 
             if (currentUser == default || followedUser == default)
                 return null;
@@ -35,7 +35,7 @@ namespace realworldapp.Handlers.Profiles
             await _context.Followers.AddAsync(new UserFollower
             {
                 Followed = followedUser.Profile,
-                Follower = currentUser.Profile
+                Following = currentUser.Profile
             }, cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -19,7 +19,7 @@ namespace realworldapp.Handlers.Profiles
 
         public async Task<ProfileWrapper> Handle(QueryProfileCommand command, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(command.Username))
+            if (string.IsNullOrWhiteSpace(command.Username))
                 return null;
 
             var profile = await _context.Profiles.Include(i => i.User).FirstOrDefaultAsync(i => i.Username == command.Username, cancellationToken);

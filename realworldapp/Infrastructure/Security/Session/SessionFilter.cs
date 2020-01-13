@@ -45,7 +45,8 @@ namespace realworldapp.Infrastructure.Security.Session
             {
                 Username = userName,
                 Email = email,
-                UserId = userId
+                // ReSharper disable once AssignNullToNotNullAttribute
+                ProfileId = int.Parse(userId)
             };
         }
     }

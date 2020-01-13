@@ -1,4 +1,5 @@
 ﻿using System;
+using realworldapp.Handlers.Tags.Response;
 using realworldapp.Handlers.Users.Responses;
 using realworldapp.Models;
 
@@ -12,13 +13,13 @@ namespace realworldapp.Handlers.Comments.Responses
             CreatedAt = comment.CreatedAt;
             UpdatedAt = comment.UpdatedAt;
             Id = comment.CommentId;
-            Author = new UserDto(comment.Author);
+            Author = new ProfileDto(comment.Author);
         }
 
-        public ulong Id { get; set; }
+        public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public string Body { get; set; }
-        public UserDto Author { get; set; }
+        public ProfileDto Author { get; set; }
     }
 }
