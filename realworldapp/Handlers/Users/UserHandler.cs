@@ -48,7 +48,7 @@ namespace realworldapp.Handlers.Users
             user.Token = _jwtService.GenerateToken(claims);
             _context.Users.Add(user);
             await _context.SaveChangesAsync(cancellationToken);
-
+            
             return new UserWrapper(user);
         }
 

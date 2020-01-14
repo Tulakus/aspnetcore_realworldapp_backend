@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using realworldapp.Infrastructure.Security.Session;
 using realworldapp.Models;
 
@@ -10,6 +12,8 @@ namespace realworldapp.Models
 {
     public class AppDbContext : DbContext
     {
+        private IDbContextTransaction _currentTransaction;
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
@@ -71,36 +75,54 @@ namespace realworldapp.Models
                 entity.HasOne(item => item.Person).WithMany(relation => relation.FavoritedArticles)
                     .HasForeignKey(key => key.ArticleId);
             });
+        }
 
-            //modelBuilder.Entity<Article>(entity =>
-            //    {
-            //        entity.HasMany(i => i.Comments).WithOne(i => i.Article).HasForeignKey(i => i.Article.ArticleId)
-            //            .OnDelete(DeleteBehavior.Cascade);
-            //    });
+        public void BeginTransaction()
+        {
+            if (_currentTransaction != null || Database.IsInMemory())
+            {
+                return;
+            }
+            
+            _currentTransaction = Database.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            //modelBuilder.Entity<Comment>(entity =>
-            //{
-            //    entity.HasOne(item => item.Article).WithMany(relation => relation.Comments)
-            //        .HasForeignKey(key => key.Article.ArticleId).OnDelete(DeleteBehavior.Cascade);
-            //    entity.HasOne(item => item.Article).WithMany(relation => relation.Comments)
-            //        .HasForeignKey(i => i.Author.ProfileId).OnDelete(DeleteBehavior.Restrict);
+        }
 
-            //});
+        public void CommitTransaction()
+        {
+            try
+            {
+                _currentTransaction?.Commit();
+            }
+            catch
+            {
+                RollbackTransaction();
+                throw;
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
+        }
 
-            //modelBuilder.Entity<ArticleProfile>(entity =>
-            //{
-            //    entity.HasKey(key => new
-            //    {
-            //        key.ProfileId,
-            //        key.ArticleId
-            //    });
-
-            //    entity.HasOne(item => item.Article).WithMany(relation => relation.FavoritedArticles)
-            //        .HasForeignKey(key => key.ArticleId);
-
-            //    entity.HasOne(item => item.Person).WithMany(relation => relation.FavoritedArticles)
-            //        .HasForeignKey(key => key.ProfileId);
-            //});
+        public void RollbackTransaction()
+        {
+            try
+            {
+                _currentTransaction?.Rollback();
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
         }
 
     }

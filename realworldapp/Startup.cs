@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using realworldapp.Infrastructure;
 using realworldapp.Infrastructure.Security;
 using realworldapp.Infrastructure.Security.JWT;
 using realworldapp.Infrastructure.Security.Session;
@@ -35,6 +36,7 @@ namespace realworldapp
                 opt.UseSqlServer(Configuration.GetConnectionString("RealWorldApp")));
             services.AddMvc(options => { options.Filters.Add(typeof(SessionFilter)); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddTransactionPipeline();
             services.AddSession();
             services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
             services.AddScoped<IJwt, Jwt>();

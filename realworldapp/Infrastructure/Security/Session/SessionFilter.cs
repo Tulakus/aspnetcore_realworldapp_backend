@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using realworldapp.Infrastructure.Security.JWT;
 using realworldapp.Models;
@@ -27,7 +25,7 @@ namespace realworldapp.Infrastructure.Security.Session
                 _dbContext.UserInfo = GetUserInfo(userIdentity.Claims);
             }
 
-            var result = await next();
+            await next();
         }
 
         UserInfo GetUserInfo(IEnumerable<Claim> claims)
