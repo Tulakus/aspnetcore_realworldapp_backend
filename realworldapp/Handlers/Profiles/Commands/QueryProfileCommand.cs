@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using realworldapp.Handlers.Profiles.Response;
 
 namespace realworldapp.Handlers.Profiles.Commands
@@ -10,6 +11,13 @@ namespace realworldapp.Handlers.Profiles.Commands
         public QueryProfileCommand(string username)
         {
             Username = username;
+        }
+    }
+
+    public class QueryProfileCommandValidator : AbstractValidator<QueryProfileCommand>
+    {
+        public QueryProfileCommandValidator()
+        {
         }
     }
 }

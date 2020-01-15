@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using realworldapp.Handlers.Profiles.Response;
-using realworldapp.Handlers.Tags.Response;
 
 namespace realworldapp.Handlers.Profiles.Commands
 {
@@ -11,6 +11,13 @@ namespace realworldapp.Handlers.Profiles.Commands
         public FollowUserCommand(string username)
         {
             Username = username;
+        }
+    }
+
+    public class FollowUserCommandValidator : AbstractValidator<FollowUserCommand>
+    {
+        public FollowUserCommandValidator()
+        {
         }
     }
 }

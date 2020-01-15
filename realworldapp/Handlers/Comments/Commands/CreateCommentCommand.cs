@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using realworldapp.Handlers.Comments.Responses;
 
 namespace realworldapp.Handlers.Comments.Commands
@@ -12,5 +13,22 @@ namespace realworldapp.Handlers.Comments.Commands
     public class CommentData
     {
         public string Body { get; set; }
+    }
+
+    public class CreateCommentCommandValidator : AbstractValidator<CreateCommentCommand>
+    {
+        public CreateCommentCommandValidator()
+        {
+            RuleFor(c => c.Slug).NotEmpty();
+            RuleFor(c => c.Comment).NotNull().SetValidator(new CommentDataCommandValidator());
+        }
+    }
+
+    public class CommentDataCommandValidator : AbstractValidator<CommentData>
+    {
+        public CommentDataCommandValidator()
+        {
+            RuleFor(c => c.Body).NotEmpty();
+        }
     }
 }

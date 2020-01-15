@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using realworldapp.Handlers.Users.Responses;
 
 namespace realworldapp.Handlers.Users.Commands
@@ -15,5 +16,13 @@ namespace realworldapp.Handlers.Users.Commands
         public string Password { get; set; }
         public string Image { get; set; }
         public string Bio { get; set; }
+    }
+
+    public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
+    {
+        public UpdateUserCommandValidator()
+        {
+            RuleFor(r => r.User).NotNull();
+        }
     }
 }

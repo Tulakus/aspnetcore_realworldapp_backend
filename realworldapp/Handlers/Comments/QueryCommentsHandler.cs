@@ -20,10 +20,6 @@ namespace realworldapp.Handlers.Comments
         }
         public async Task<CommentListWrapper> Handle(QueryCommentsCommand command, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(command.Slug))
-                return null;
-
-            //var article = await _context.Articles.FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
             var article = await _context.Articles.FirstAsync(cancellationToken);
 
             if (article == default(Article))

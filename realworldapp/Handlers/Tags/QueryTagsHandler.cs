@@ -21,10 +21,10 @@ namespace realworldapp.Handlers.Tags
         public async Task<TagListWrapper> Handle(QueryTagListCommand command, CancellationToken cancellationToken)
         {
             var tagList = await _context.Tags.ToListAsync(cancellationToken);
-            var dto = tagList.Select(i => i.Name).ToList();
+            var tags = tagList.Select(i => i.Name).ToList();
             return new TagListWrapper
             {
-                Tags = dto
+                Tags = tags
             };
         }
     }

@@ -22,11 +22,6 @@ namespace realworldapp.Handlers.Articles
         public async Task<ArticleDetailWrapper> Handle(UpdateArticleCommand command, CancellationToken cancellationToken)
         {
             var changeCommand = command.Article;
-            if (string.IsNullOrWhiteSpace(changeCommand.Slug))
-            {
-                return null;// todo dodelat
-            }
-
             var articleTagList = changeCommand.TagList?.Distinct().ToList();
 
             var articleQueryable = _context.Articles

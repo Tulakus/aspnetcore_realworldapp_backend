@@ -89,9 +89,6 @@ namespace realworldapp.Handlers.Users
             if (currentUser.Username != command.User.Username)
                 return null; // todo - return different user
 
-            if (string.IsNullOrWhiteSpace(commandUser.Username))
-                throw new ArgumentException("Invalid command");
-
             var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Profile.Username == currentUser.Username, cancellationToken);
 
             if (user == default)

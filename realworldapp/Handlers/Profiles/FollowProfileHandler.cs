@@ -20,9 +20,6 @@ namespace realworldapp.Handlers.Profiles
 
         public async Task<ProfileWrapper> Handle(FollowUserCommand command, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(command.Username))
-                return null;
-
             var currentUserName = _context.UserInfo.Username;
             var usersQueryable = _context.Users.Include(i => i.Profile);
 

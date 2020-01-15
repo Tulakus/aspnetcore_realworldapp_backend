@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Articles
@@ -10,6 +11,14 @@ namespace realworldapp.Handlers.Articles
         public QueryDetailArticleCommand(string slug)
         {
             Slug = slug;
+        }
+    }
+
+    public class QueryDetailArticleCommandValidator : AbstractValidator<QueryDetailArticleCommand>
+    {
+        public QueryDetailArticleCommandValidator()
+        {
+            RuleFor(c => c.Slug).NotEmpty();
         }
     }
 }

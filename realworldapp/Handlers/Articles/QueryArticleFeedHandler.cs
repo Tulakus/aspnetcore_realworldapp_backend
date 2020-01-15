@@ -27,8 +27,6 @@ namespace realworldapp.Handlers.Articles
                 .Include(i => i.Author)
                 .AsNoTracking();
 
-            var a = _context.Profiles.Include(i => i.Following).Include(i => i.Followers);
-
             var currentUser = await _context.Profiles.Include(i => i.Following)
                 .FirstOrDefaultAsync(i => i.Username == _context.UserInfo.Username, cancellationToken);
             

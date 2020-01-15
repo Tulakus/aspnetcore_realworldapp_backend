@@ -19,9 +19,6 @@ namespace realworldapp.Handlers.Comments
         }
         public async Task<CommentWrapper> Handle(CreateCommentCommand command, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(command.Slug))
-                return null;
-
             var article = await _context.Articles.Include(i => i.Comments)
                 .FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FluentValidation;
 using MediatR;
 using realworldapp.Models;
 
@@ -6,10 +7,15 @@ namespace realworldapp.Handlers.Articles.Commands
 {
     public class CreateArticleCommand: IRequest<ArticleDetailWrapper>
     {
-        public CreateArticleData Article { get; set; }
+        public ArticleBase Article { get; set; }
     }
 
-    public class CreateArticleData : ArticleBase
+
+    public class CreateArticleCommandCommandValidator : AbstractValidator<CreateArticleCommand>
     {
+        public CreateArticleCommandCommandValidator()
+        {
+            RuleFor(c => c.Article).SetValidator(new ArticleBaseValidator<ArticleBase>());
+        }
     }
 }

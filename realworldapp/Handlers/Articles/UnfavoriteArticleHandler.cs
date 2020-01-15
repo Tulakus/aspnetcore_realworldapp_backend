@@ -19,11 +19,6 @@ namespace realworldapp.Handlers.Articles
         }
         public async Task<ArticleDetailWrapper> Handle(UnfavoriteArticleCommand command, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(command.Slug))
-            {
-                return null; // todo return invalid command
-            }
-
             var article = await _context.Articles.IncludeAllArticleInformationNotTracking()
                 .FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
 
