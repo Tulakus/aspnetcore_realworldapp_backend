@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -43,14 +45,30 @@ namespace realworldapp
             services.AddScoped<ISlugGenerator, SlugGenerator>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-                options => options.TokenValidationParameters = new TokenValidationParameters
+                options =>
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = "muj.pokus.cz",
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ReallySecretCode")),
-                    ValidateLifetime = true,
-                    ValidateAudience = false
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "muj.pokus.cz",
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ReallySecretCode")),
+                        ValidateLifetime = true,
+                        ValidateAudience = false
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = (context) =>
+                        {
+                            var token = context.HttpContext.Request.Headers["Authorization"];// RealWorldApi spec expect token set as Token <valid_token> instead Bearer <valid_token>
+                            if (token.Count > 0 && token[0].StartsWith("Token ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = token[0].Substring("Token ".Length).Trim();
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
                 }
             );
         }
