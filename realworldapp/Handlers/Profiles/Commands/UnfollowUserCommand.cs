@@ -18,6 +18,7 @@ namespace realworldapp.Handlers.Profiles.Commands
     {
         public UnfollowUserCommandValidator()
         {
+            RuleFor(c => c.Username).NotEmpty();
         }
     }
 }

@@ -18,6 +18,7 @@ namespace realworldapp.Handlers.Profiles.Commands
     {
         public QueryProfileCommandValidator()
         {
+            RuleFor(c => c.Username).NotEmpty();
         }
     }
 }
