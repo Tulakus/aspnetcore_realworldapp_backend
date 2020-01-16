@@ -6,6 +6,8 @@ using realworldapp.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using realworldapp.Error;
+using realworldapp.Infrastructure;
 
 namespace realworldapp.Handlers.Articles
 {
@@ -31,7 +33,7 @@ namespace realworldapp.Handlers.Articles
                 .FirstOrDefaultAsync(i => i.Username == _context.UserInfo.Username, cancellationToken);
             
             if (currentUser == null)
-                return null; // todo add error
+                throw new NotFoundCommandException(new { User = ErrorMessages.NotFound });
 
             var followedPeople = currentUser.Following.Select(i => i.FollowedId).ToList();
 

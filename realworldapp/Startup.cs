@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using realworldapp.Infrastructure;
 using realworldapp.Infrastructure.Security;
 using realworldapp.Infrastructure.Security.JWT;
@@ -38,11 +39,15 @@ namespace realworldapp
             services.AddDbContextPool<AppDbContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("RealWorldApp")));
             services.AddMvc(options =>
-            {
-                options.Filters.Add(typeof(SessionFilter));
-                options.Filters.Add(typeof(ValidatorActionFilter));
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddFluentValidation(fvc =>
-                fvc.RegisterValidatorsFromAssemblyContaining<Startup>());
+                {
+                    options.Filters.Add(typeof(SessionFilter));
+                    options.Filters.Add(typeof(ValidatorActionFilter));
+                }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation(fvc => fvc.RegisterValidatorsFromAssemblyContaining<Startup>())
+                .AddJsonOptions(options =>
+                    {
+                        options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                    });
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidationPipeline();
             services.AddTransactionPipeline();
@@ -79,6 +84,7 @@ namespace realworldapp
                 }
             );
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+            services.AddLocalization(x => x.ResourcesPath = "Resources");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,8 +113,10 @@ namespace realworldapp
             {
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
+            
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();

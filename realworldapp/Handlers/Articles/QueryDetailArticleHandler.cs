@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using realworldapp.Error;
+using realworldapp.Infrastructure;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Articles
@@ -18,9 +19,9 @@ namespace realworldapp.Handlers.Articles
         public async Task<ArticleDetailWrapper> Handle(QueryDetailArticleCommand command, CancellationToken cancellationToken)
         {
             var article = await _context.Articles.FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
-            if (article == null)
+            if (article == default(Article))
             {
-                throw new NotFoundCommandException(new { Article = "not found" });
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
             }
 
             return new ArticleDetailWrapper(article);

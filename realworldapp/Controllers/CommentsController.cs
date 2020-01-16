@@ -31,26 +31,6 @@ namespace realworldapp.Controllers
             return await _mediator.Send(new QueryCommentsCommand(slug));
         }
 
-        // GET: api/Comments/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetComment([FromRoute] ulong id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var comment = await _context.Comments.FindAsync(id);
-
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(comment);
-        }
-
-
         // POST: api/Comments
         [HttpPost]
         public async Task<CommentWrapper> PostComment([FromBody] CreateCommentCommand command, [FromRoute] string slug)
@@ -61,7 +41,7 @@ namespace realworldapp.Controllers
 
         // DELETE: api/Comments/5
         [HttpDelete("{commentId}")]
-        public async Task<CommentWrapper> DeleteComment([FromRoute] string slug, [FromRoute] int commentId)
+        public async Task<Unit> DeleteComment([FromRoute] string slug, [FromRoute] int commentId)
         {
             return await _mediator.Send(new DeleteCommentCommand(){CommentId = commentId, Slug = slug}, new CancellationToken());
         }

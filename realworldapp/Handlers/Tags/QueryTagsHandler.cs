@@ -22,6 +22,7 @@ namespace realworldapp.Handlers.Tags
         {
             var tagList = await _context.Tags.ToListAsync(cancellationToken);
             var tags = tagList.Select(i => i.Name).ToList();
+            
             return new TagListWrapper
             {
                 Tags = tags

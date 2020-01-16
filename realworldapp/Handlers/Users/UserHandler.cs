@@ -1,11 +1,12 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using realworldapp.Error;
 using realworldapp.Handlers.Users.Commands;
 using realworldapp.Handlers.Users.Responses;
+using realworldapp.Infrastructure;
 using realworldapp.Infrastructure.Security;
 using realworldapp.Infrastructure.Security.JWT;
 using realworldapp.Models;
@@ -32,7 +33,7 @@ namespace realworldapp.Handlers.Users
 
             var user = await _context.Users.FirstOrDefaultAsync(i => i.Login == userData.Email, cancellationToken);
             if (user != default(User))
-                return null; // todo - return already registered
+                throw new ValidationCommandException(new { User = ErrorMessages.AlreadyExist});
 
             user = new User
             {
@@ -66,8 +67,9 @@ namespace realworldapp.Handlers.Users
         {
             var commandUser = command.User;
             var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Login == commandUser.Email, cancellationToken);
+            
             if (user is default(User))
-                return null; // todo - return already registered
+                throw new NotFoundCommandException(new { User = ErrorMessages.NotFound});
 
             if (!_passwordHashProvider.VerifyPassword(command.User.Password, user.Password))
                 return null;
@@ -87,12 +89,12 @@ namespace realworldapp.Handlers.Users
             var commandUser = command.User;
             var currentUser = _context.UserInfo;
             if (currentUser.Username != command.User.Username)
-                return null; // todo - return different user
+                throw new ForbiddenCommandException(new { User = ErrorMessages.NoPrivileges});
 
             var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Profile.Username == currentUser.Username, cancellationToken);
 
-            if (user == default)
-                return null; // todo - return not found
+            if (user is default(User))
+                throw new NotFoundCommandException(new { User = ErrorMessages.NotFound });
 
             user.Profile.Username = commandUser.Username ?? user.Profile.Username;
             user.Login = commandUser.Email ?? user.Login;
@@ -117,12 +119,12 @@ namespace realworldapp.Handlers.Users
         {
             var currentUser = _context.UserInfo.Username;
 
-            if (string.IsNullOrWhiteSpace(currentUser))
-                throw new ArgumentException("Invalid user");
-
             var user = await _context.Users.AsNoTracking().Include(i => i.Profile)
                 .FirstOrDefaultAsync(i => i.Profile.Username == currentUser, cancellationToken);
-
+            
+            if (user is default(User))
+                throw new NotFoundCommandException(new { User = ErrorMessages.NotFound });
+            
             return new UserWrapper(user);
         }
     }

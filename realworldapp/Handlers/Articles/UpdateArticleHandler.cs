@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using realworldapp.Error;
 using realworldapp.Handlers.Articles.Commands;
+using realworldapp.Infrastructure;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Articles
@@ -33,12 +35,12 @@ namespace realworldapp.Handlers.Articles
 
             if (article == default(Article))
             {
-                return null; // todo add invalid/notfound result
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
             }
 
             if (article.Author.ProfileId != _context.UserInfo.ProfileId)
             {
-                return null; // todo return unauthorized
+                throw new ForbiddenCommandException(new { Comment = ErrorMessages.EditArticleByUnauthorizedUser });
             }
 
             if (articleTagList == null || !articleTagList.Any())

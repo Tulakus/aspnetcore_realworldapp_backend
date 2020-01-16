@@ -14,8 +14,8 @@ namespace realworldapp.Models
             Description = article.Description;
             Title = article.Title;
             Body = article.Body;
-            CreatedAt = DateTime.SpecifyKind(article.CreatedAt, DateTimeKind.Utc);// because date materialized from database has unspecified kind -> needs to specify correct kind
-            UpdatedAt = DateTime.SpecifyKind(article.UpdatedAt, DateTimeKind.Utc);
+            CreatedAt = article.CreatedAt;
+            UpdatedAt = article.UpdatedAt;
             Slug = article.Slug;
             TagList = article.ArticleTags.Select(i => i.Tag.Name).ToList();
             Favorited = article.Favorited;

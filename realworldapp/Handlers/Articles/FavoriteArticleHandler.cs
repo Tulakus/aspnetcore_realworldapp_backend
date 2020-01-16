@@ -6,6 +6,7 @@ using realworldapp.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using realworldapp.Infrastructure;
 
 namespace realworldapp.Handlers.Articles
 {
@@ -19,12 +20,15 @@ namespace realworldapp.Handlers.Articles
         }
         public async Task<ArticleDetailWrapper> Handle(FavoriteArticleCommand command, CancellationToken cancellationToken)
         {
-            var article = await _context.Articles.IncludeAllArticleInformationNotTracking()
+            var article = await _context.Articles.IncludeAllArticleInformation()
                 .FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
+            
+            var currentUser =
+                await _context.Profiles.FirstOrDefaultAsync(i => i.ProfileId == _context.UserInfo.ProfileId);
 
             if (article == default(Article))
             {
-                throw new NotFoundCommandException(new { Article = "not found" });
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
             }
 
             var queryable = _context.FavoritedArticles.Include(i => i.Article).Include(i => i.Person);
@@ -35,11 +39,14 @@ namespace realworldapp.Handlers.Articles
             {
                 var articleFavorites = new ArticleProfile()
                 {
+                    Article = article,
+                    ProfileId = currentUser.ProfileId,
                     ArticleId = article.ArticleId,
-                    ProfileId = _context.UserInfo.ProfileId
+                   Person = currentUser,
+                   
                 };
 
-                _context.FavoritedArticles.Add(articleFavorites);
+                await _context.FavoritedArticles.AddAsync(articleFavorites, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
             }
 
@@ -48,7 +55,7 @@ namespace realworldapp.Handlers.Articles
 
             if (article == default(Article))
             {
-                throw new NotFoundCommandException(new { Article = "not found" });
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
             }
 
 

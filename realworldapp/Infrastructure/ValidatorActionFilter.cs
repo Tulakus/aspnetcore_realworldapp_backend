@@ -9,11 +9,11 @@ namespace realworldapp.Infrastructure
 {
     public class ValidatorActionFilter : IActionFilter
     {
-        private readonly ILogger logger;
+        private readonly ILogger _logger;
 
         public ValidatorActionFilter(ILogger<ValidatorActionFilter> logger)
         {
-            this.logger = logger;
+            this._logger = logger;
         }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)

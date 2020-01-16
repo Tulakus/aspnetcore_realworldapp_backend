@@ -4,8 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using realworldapp.Error;
 using realworldapp.Handlers.Comments.Commands;
 using realworldapp.Handlers.Comments.Responses;
+using realworldapp.Infrastructure;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Comments
@@ -23,7 +25,7 @@ namespace realworldapp.Handlers.Comments
             var article = await _context.Articles.FirstAsync(cancellationToken);
 
             if (article == default(Article))
-                return null;
+                throw new NotFoundCommandException(new {Article = ErrorMessages.NotFound});
 
             var result = _context.Comments.Include(i => i.Article).ThenInclude(i => i.Author).Where(i => i.Article.Slug == command.Slug).ToList();
 

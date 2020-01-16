@@ -3,13 +3,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using realworldapp.Error;
 using realworldapp.Handlers.Comments.Commands;
 using realworldapp.Handlers.Comments.Responses;
+using realworldapp.Infrastructure;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Comments
 {
-    public class DeleteCommentHandler : IRequestHandler<DeleteCommentCommand, CommentWrapper>
+    public class DeleteCommentHandler : IRequestHandler<DeleteCommentCommand, Unit>
     {
         private readonly AppDbContext _context;
 
@@ -17,28 +19,30 @@ namespace realworldapp.Handlers.Comments
         {
             _context = context;
         }
-        public async Task<CommentWrapper> Handle(DeleteCommentCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteCommentCommand command, CancellationToken cancellationToken)
         {
-             var queryable = _context.Comments.Include(i => i.Article).Include(i => i.Author);
+            var queryable = _context.Comments.Include(i => i.Article).Include(i => i.Author);
 
             var comment = await queryable.FirstOrDefaultAsync(
                 i => i.CommentId == command.CommentId && i.Article.Slug == command.Slug, cancellationToken);
 
-            if(comment == default(Comment))
+            if (comment == default(Comment))
             {
-                return null; //todo
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
             }
 
-            if (comment.Author.ProfileId != _context.UserInfo.ProfileId ||
-                comment.Article.Author.ProfileId != _context.UserInfo.ProfileId)
+            var isArticleAuthor = comment.Author.ProfileId == _context.UserInfo.ProfileId;
+            var isCommentAuthor = comment.Article.Author.ProfileId == _context.UserInfo.ProfileId;
+            
+            if ( !isCommentAuthor|| !isArticleAuthor)
             {
-                return null; // todo unauthorized
+                throw new ForbiddenCommandException(new {Comment = ErrorMessages.DeleteCommentByUnauthorizedUser});
             }
 
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return null; // todo new CommentWrapper(newComment);
+            return Unit.Value;
         }
     }
 }

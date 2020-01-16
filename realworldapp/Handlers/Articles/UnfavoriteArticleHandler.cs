@@ -6,6 +6,7 @@ using realworldapp.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using realworldapp.Infrastructure;
 
 namespace realworldapp.Handlers.Articles
 {
@@ -24,7 +25,7 @@ namespace realworldapp.Handlers.Articles
 
             if (article == default(Article))
             {
-                throw new NotFoundCommandException(new { Article = "not found" });
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
             }
 
             var favoritesArticle = article.FavoritedArticles
@@ -41,7 +42,7 @@ namespace realworldapp.Handlers.Articles
 
             if (article == default(Article))
             {
-                throw new NotFoundCommandException(new { Article = "not found" });
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
             }
 
             return new ArticleDetailWrapper(article);
