@@ -1,8 +1,6 @@
-﻿using FluentValidation;
-using MediatR;
-using realworldapp.Handlers.Comments.Commands;
+﻿using MediatR;
 
-namespace realworldapp.Handlers.Articles
+namespace realworldapp.Handlers.Articles.Commands
 {
     public class DeleteArticleCommand: IRequest
     {
@@ -11,14 +9,6 @@ namespace realworldapp.Handlers.Articles
         public DeleteArticleCommand(string slug)
         {
             Slug = slug;
-        }
-
-        public class DeleteArticleCommandValidator : AbstractValidator<DeleteArticleCommand>
-        {
-            public DeleteArticleCommandValidator()
-            {
-                RuleFor(c => c.Slug).NotEmpty();
-            }
         }
     }
 }

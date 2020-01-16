@@ -14,20 +14,4 @@ namespace realworldapp.Handlers.Articles.Commands
     {
         public string Slug { get; set; }
     }
-
-    public class UpdateArticleCommandValidator : AbstractValidator<UpdateArticleCommand>
-    {
-        public UpdateArticleCommandValidator()
-        {
-            RuleFor(c => c.Article).SetValidator(new UpdateArticleDataValidator());
-        }
-    }
-
-    public class UpdateArticleDataValidator : ArticleBaseValidator<UpdateArticleData> 
-    {
-        public UpdateArticleDataValidator()
-        {
-            RuleFor(c => c.Slug).NotNull();
-        }
-    }
 }

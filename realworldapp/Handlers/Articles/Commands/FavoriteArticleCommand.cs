@@ -8,13 +8,4 @@ namespace realworldapp.Handlers.Articles.Commands
     {
         public string Slug { get; set; }
     }
-
-    public class FavoriteArticleCommandValidator : AbstractValidator<FavoriteArticleCommand>
-    {
-        public FavoriteArticleCommandValidator()
-        {
-            RuleFor(c => c.Slug).NotEmpty();
-        }
-    }
-
 }
