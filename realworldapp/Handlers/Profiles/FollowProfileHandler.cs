@@ -10,7 +10,7 @@ using realworldapp.Models;
 
 namespace realworldapp.Handlers.Profiles
 {
-    public class FollowProfileHandler: IRequestHandler<FollowUserCommand, ProfileWrapper>
+    public class FollowProfileHandler : IRequestHandler<FollowUserCommand, ProfileWrapper>
     {
         private AppDbContext _context;
 

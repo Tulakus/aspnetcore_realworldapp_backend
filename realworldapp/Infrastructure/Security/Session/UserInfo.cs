@@ -1,6 +1,4 @@
-﻿using realworldapp.Models;
-
-namespace realworldapp.Infrastructure.Security.Session
+﻿namespace realworldapp.Infrastructure.Security.Session
 {
     public class UserInfo
     {

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using realworldapp.Error;
 using realworldapp.Handlers.Articles.Commands;
 using realworldapp.Models;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using realworldapp.Handlers.Articles.Responses;
 using realworldapp.Infrastructure;
 
 namespace realworldapp.Handlers.Articles
@@ -22,7 +22,7 @@ namespace realworldapp.Handlers.Articles
         {
             var article = await _context.Articles.IncludeAllArticleInformation()
                 .FirstOrDefaultAsync(i => i.Slug == command.Slug, cancellationToken);
-            
+
             var currentUser =
                 await _context.Profiles.FirstOrDefaultAsync(i => i.ProfileId == _context.UserInfo.ProfileId);
 
@@ -42,8 +42,8 @@ namespace realworldapp.Handlers.Articles
                     Article = article,
                     ProfileId = currentUser.ProfileId,
                     ArticleId = article.ArticleId,
-                   Person = currentUser,
-                   
+                    Person = currentUser,
+
                 };
 
                 await _context.FavoritedArticles.AddAsync(articleFavorites, cancellationToken);

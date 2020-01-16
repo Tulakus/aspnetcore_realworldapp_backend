@@ -1,18 +1,21 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using realworldapp.Handlers.Articles.Response;
 using realworldapp.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using realworldapp.Error;
+using realworldapp.Handlers.Articles.Commands;
+using realworldapp.Handlers.Articles.Responses;
+using realworldapp.Infrastructure;
 
 namespace realworldapp.Handlers.Articles
 {
     public class QueryArticlesHandler : IRequestHandler<QueryArticlesCommand, ArticleListWrapper>, IRequestHandler<QueryArticleCommand, ArticleDetailWrapper>
     {
         private readonly AppDbContext _context;
-        private  const int DefaultLimit = 20;
-        private  const int DefaultOffset = 0;
+        private const int DefaultLimit = 20;
+        private const int DefaultOffset = 0;
         public QueryArticlesHandler(AppDbContext context)
         {
             _context = context;
@@ -30,12 +33,12 @@ namespace realworldapp.Handlers.Articles
             {
                 if (!await _context.Profiles.AnyAsync(i => i.Username == command.Author, cancellationToken))
                 {
-                    return GetDefaultResponse();
+                    throw new NotFoundCommandException(new { User = ErrorMessages.NotFound });
                 }
 
                 articleQueryable = articleQueryable.Where(i => i.Author.Username == command.Author);
             }
-
+            
             if (!string.IsNullOrWhiteSpace(command.Tag))
             {
                 articleQueryable = articleQueryable.Where(article => article.ArticleTags.Any(tag => tag.Tag.Name == command.Tag));
@@ -56,11 +59,6 @@ namespace realworldapp.Handlers.Articles
             return new ArticleListWrapper(result);
         }
 
-        ArticleListWrapper GetDefaultResponse()
-        {
-            return new ArticleListWrapper(new Article[0]); // todo error message -> not found
-        }
-
         public async Task<ArticleDetailWrapper> Handle(QueryArticleCommand request, CancellationToken cancellationToken)
         {
             var articleQueryable = _context.Articles
@@ -69,11 +67,6 @@ namespace realworldapp.Handlers.Articles
                 .Include(i => i.FavoritedArticles)
                 .Include(i => i.Author)
                 .AsNoTracking();
-
-            if (string.IsNullOrWhiteSpace(request.Slug))
-            {
-                return null; // todo
-            }
 
             var result = await articleQueryable.FirstOrDefaultAsync(i => i.Slug == request.Slug, cancellationToken);
 

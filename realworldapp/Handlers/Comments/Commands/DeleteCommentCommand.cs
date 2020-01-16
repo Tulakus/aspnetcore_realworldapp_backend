@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using realworldapp.Handlers.Comments.Responses;
 
 namespace realworldapp.Handlers.Comments.Commands
 {

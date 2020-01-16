@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using realworldapp.Models;
 
-namespace realworldapp.Models
+namespace realworldapp.Handlers.Articles.Responses
 {
     public class ArticleDetailWrapper
     {

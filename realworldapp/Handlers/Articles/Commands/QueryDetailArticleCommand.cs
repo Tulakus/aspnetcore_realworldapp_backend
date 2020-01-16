@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
-using realworldapp.Models;
+using realworldapp.Handlers.Articles.Responses;
 
-namespace realworldapp.Handlers.Articles
+namespace realworldapp.Handlers.Articles.Commands
 {
     public class QueryDetailArticleCommand : IRequest<ArticleDetailWrapper>
     {

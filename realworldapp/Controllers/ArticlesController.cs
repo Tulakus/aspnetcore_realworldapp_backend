@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using realworldapp.Handlers.Articles;
 using realworldapp.Handlers.Articles.Commands;
-using realworldapp.Handlers.Articles.Response;
-using realworldapp.Models;
 using System.Threading.Tasks;
+using realworldapp.Handlers.Articles.Responses;
 
 namespace realworldapp.Controllers
 {
@@ -20,9 +18,8 @@ namespace realworldapp.Controllers
             _mediator = mediator;
         }
 
-        // GET: api/Articles
         [HttpGet]
-        public async Task<ArticleListWrapper> GetArticles([FromQuery] QueryArticlesCommand command, [FromRoute] string slug)
+        public async Task<ArticleListWrapper> GetArticles([FromQuery] QueryArticlesCommand command)
         {
             return await _mediator.Send(command);
         }
@@ -30,7 +27,7 @@ namespace realworldapp.Controllers
         [HttpGet("{slug}")]
         public async Task<ArticleDetailWrapper> GetArticle([FromRoute] string slug)
         {
-            return await _mediator.Send(new QueryArticleCommand(){Slug = slug});
+            return await _mediator.Send(new QueryArticleCommand() { Slug = slug });
         }
 
         [HttpGet("feed")]
@@ -40,8 +37,7 @@ namespace realworldapp.Controllers
             return await _mediator.Send(new QueryArticlesFeedCommand());
         }
 
-        // PUT: api/Articles/5
-        [HttpPut("{slug}")]//todo zkontrolovat
+        [HttpPut("{slug}")]
         [Authorize]
         public async Task<ArticleDetailWrapper> UpdateArticle([FromRoute] string slug, [FromBody] UpdateArticleCommand command)
         {
@@ -49,7 +45,6 @@ namespace realworldapp.Controllers
             return await _mediator.Send(command);
         }
 
-        // POST: api/Articles
         [HttpPost]
         [Authorize]
         public async Task<ArticleDetailWrapper> PostArticle([FromBody] CreateArticleCommand command)
@@ -58,7 +53,6 @@ namespace realworldapp.Controllers
             return resp;
         }
 
-        // DELETE: api/Articles/5
         [HttpDelete("{slug}")]
         [Authorize]
         public async Task<Unit> DeleteArticle([FromRoute] string slug)
@@ -66,7 +60,6 @@ namespace realworldapp.Controllers
             return await _mediator.Send(new DeleteArticleCommand(slug));
         }
 
-        // DELETE: api/Articles/5
         [HttpPost("{slug}/favorite")]
         [Authorize]
         public async Task<ArticleDetailWrapper> FavoriteArticle([FromRoute] FavoriteArticleCommand command)
@@ -74,7 +67,6 @@ namespace realworldapp.Controllers
             return await _mediator.Send(command);
         }
 
-        // DELETE: api/Articles/5
         [HttpDelete("{slug}/favorite")]
         [Authorize]
         public async Task<ArticleDetailWrapper> UnfavoriteArticle([FromRoute] UnfavoriteArticleCommand command)

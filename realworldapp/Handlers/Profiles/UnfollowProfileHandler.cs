@@ -11,7 +11,7 @@ using realworldapp.Models;
 
 namespace realworldapp.Handlers.Profiles
 {
-    public class UnfollowProfileHandler: IRequestHandler<UnfollowUserCommand, ProfileWrapper>
+    public class UnfollowProfileHandler : IRequestHandler<UnfollowUserCommand, ProfileWrapper>
     {
         private readonly AppDbContext _context;
 
@@ -30,7 +30,7 @@ namespace realworldapp.Handlers.Profiles
             var unfollowedUser = await usersQueryable.FirstOrDefaultAsync(i => i.Profile.Username == command.Username, cancellationToken);
 
             if (currentUser == default)
-                throw new NotFoundCommandException(new { User = $"{currentUserName} {ErrorMessages.NotFound}"});
+                throw new NotFoundCommandException(new { User = $"{currentUserName} {ErrorMessages.NotFound}" });
 
             if (unfollowedUser == default)
                 throw new NotFoundCommandException(new { User = $"{command.Username} {ErrorMessages.NotFound}" });

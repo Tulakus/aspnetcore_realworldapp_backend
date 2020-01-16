@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using realworldapp.Infrastructure;
 
 namespace realworldapp.Error
 {
@@ -6,7 +7,7 @@ namespace realworldapp.Error
     {
         public UnauthorizedCommandException() : base(HttpStatusCode.Unauthorized, new
         {
-            User = "You must login first"
+            User = ErrorMessages.YouMustLoginFirst
         })
 
         {

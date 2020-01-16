@@ -1,6 +1,5 @@
 ﻿using System;
-using realworldapp.Handlers.Tags.Response;
-using realworldapp.Handlers.Users.Responses;
+using realworldapp.Handlers.Profiles.Response;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Comments.Responses

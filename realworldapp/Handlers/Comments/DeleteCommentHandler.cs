@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using realworldapp.Error;
 using realworldapp.Handlers.Comments.Commands;
-using realworldapp.Handlers.Comments.Responses;
 using realworldapp.Infrastructure;
 using realworldapp.Models;
 
@@ -33,10 +31,10 @@ namespace realworldapp.Handlers.Comments
 
             var isArticleAuthor = comment.Author.ProfileId == _context.UserInfo.ProfileId;
             var isCommentAuthor = comment.Article.Author.ProfileId == _context.UserInfo.ProfileId;
-            
-            if ( !isCommentAuthor|| !isArticleAuthor)
+
+            if (!isCommentAuthor || !isArticleAuthor)
             {
-                throw new ForbiddenCommandException(new {Comment = ErrorMessages.DeleteCommentByUnauthorizedUser});
+                throw new ForbiddenCommandException(new { Comment = ErrorMessages.DeleteByNotAuthor });
             }
 
             _context.Comments.Remove(comment);

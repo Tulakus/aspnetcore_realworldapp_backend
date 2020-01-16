@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ namespace realworldapp.Infrastructure
                 result.Content = content;
                 result.ContentType = "application/json";
 
-                filterContext.HttpContext.Response.StatusCode = 422; //unprocessable entity;
+                filterContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
                 filterContext.Result = result;
             }
         }

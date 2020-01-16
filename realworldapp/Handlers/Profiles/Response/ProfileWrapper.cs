@@ -1,5 +1,4 @@
-﻿using realworldapp.Handlers.Tags.Response;
-using realworldapp.Models;
+﻿using realworldapp.Models;
 
 namespace realworldapp.Handlers.Profiles.Response
 {

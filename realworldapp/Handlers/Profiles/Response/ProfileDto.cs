@@ -1,6 +1,6 @@
 ﻿using realworldapp.Models;
 
-namespace realworldapp.Handlers.Tags.Response
+namespace realworldapp.Handlers.Profiles.Response
 {
     public class ProfileDto
     {
@@ -17,7 +17,7 @@ namespace realworldapp.Handlers.Tags.Response
             Username = user.Username;
             Bio = user.Bio;
             Image = user.Image;
-            Following = true; //todo doresit
+            Following = true;
         }
     }
 }

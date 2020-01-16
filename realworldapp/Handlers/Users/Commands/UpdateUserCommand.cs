@@ -4,7 +4,7 @@ using realworldapp.Handlers.Users.Responses;
 
 namespace realworldapp.Handlers.Users.Commands
 {
-    public class UpdateUserCommand: IRequest<UserWrapper>
+    public class UpdateUserCommand : IRequest<UserWrapper>
     {
         public UpdateData User { get; set; }
     }

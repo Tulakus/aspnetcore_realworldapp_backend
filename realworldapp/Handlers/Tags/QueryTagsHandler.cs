@@ -9,7 +9,7 @@ using realworldapp.Models;
 
 namespace realworldapp.Handlers.Tags
 {
-    public class QueryTagsHandler: IRequestHandler<QueryTagListCommand, TagListWrapper>
+    public class QueryTagsHandler : IRequestHandler<QueryTagListCommand, TagListWrapper>
     {
         private AppDbContext _context;
 
@@ -22,7 +22,7 @@ namespace realworldapp.Handlers.Tags
         {
             var tagList = await _context.Tags.ToListAsync(cancellationToken);
             var tags = tagList.Select(i => i.Name).ToList();
-            
+
             return new TagListWrapper
             {
                 Tags = tags

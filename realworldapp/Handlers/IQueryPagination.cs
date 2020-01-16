@@ -2,7 +2,7 @@
 {
     interface IQueryPagination
     {
-        int Offset { get; set; } 
+        int Offset { get; set; }
         int Limit { get; set; }
     }
 }

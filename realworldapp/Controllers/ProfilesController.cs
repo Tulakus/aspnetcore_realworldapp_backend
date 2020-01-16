@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,13 +31,13 @@ namespace realworldapp.Controllers
         [HttpPost("follow")]
         public async Task<ProfileWrapper> FollowUser([FromRoute] string username)
         {
-            return await _mediator.Send(new FollowUserCommand(username), new CancellationToken());
+            return await _mediator.Send(new FollowUserCommand(username));
         }
 
         [HttpDelete("follow")]
         public async Task<ProfileWrapper> UnfollowUser([FromRoute] string username)
         {
-            return await _mediator.Send(new UnfollowUserCommand(username), new CancellationToken());
+            return await _mediator.Send(new UnfollowUserCommand(username));
         }
     }
 }

@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace realworldapp.Infrastructure.Security.JWT
+namespace realworldapp.Infrastructure.Security.Jwt
 {
-    public class Jwt: IJwt
+    public class Jwt : IJwt
     {
-        private double _tokenExpirationTime = 7 * 24 * 60;//todo read from config file
-        private string _securityAlgorithm = SecurityAlgorithms.HmacSha256Signature;
-        private string _secretKey = "ReallySecretCode"; //todo find better place
-        private string _issuer = "muj.pokus.cz"; //todo read from config
+        private readonly double _tokenExpirationTime; private string _securityAlgorithm = SecurityAlgorithms.HmacSha256Signature;
+        private readonly string _secretCode; 
+        private readonly string _issuer;
         private readonly JwtSecurityTokenHandler _securityHandler;
 
-        public Jwt()
+        public Jwt(IOptions<JwtSettings> settings)
         {
             _securityHandler = new JwtSecurityTokenHandler();
+            _issuer = settings.Value.Issuer;
+            _secretCode = settings.Value.SecretCode;
+            _tokenExpirationTime = settings.Value.TokenExpiration;
+
         }
         public bool IsTokenValid(string token)
         {
@@ -28,9 +30,10 @@ namespace realworldapp.Infrastructure.Security.JWT
 
             if (!_securityHandler.CanReadToken(token))
                 return false;
+            
             try
             {
-                _securityHandler.ValidateToken(token, GetTokenValidationParameters(), out var validatedToken);
+                _securityHandler.ValidateToken(token, GetTokenValidationParameters(), out _);
                 return true;
             }
             catch (Exception e)
@@ -41,7 +44,7 @@ namespace realworldapp.Infrastructure.Security.JWT
 
         public string GenerateToken(IEnumerable<Claim> claim)
         {
-            var securityKey = GetSymmetricSecurityKey();
+            var securityKey = GetSymmetricSecurityKey(_secretCode);
             var descriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claim),
@@ -56,9 +59,11 @@ namespace realworldapp.Infrastructure.Security.JWT
 
         public IEnumerable<Claim> GetTokenClaims(string token)
         {
-            if(!IsTokenValid(token))
+            if (!IsTokenValid(token))
+            {
                 throw new ArgumentException("Invalid JWT token");
-            
+            }
+
             try
             {
                 var jwtToken = _securityHandler.ReadJwtToken(token);
@@ -71,9 +76,9 @@ namespace realworldapp.Infrastructure.Security.JWT
             }
         }
 
-        SecurityKey GetSymmetricSecurityKey()
+        public static SecurityKey GetSymmetricSecurityKey(string secretKey)
         {
-            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         }
 
         TokenValidationParameters GetTokenValidationParameters()

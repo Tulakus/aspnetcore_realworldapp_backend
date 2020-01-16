@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using realworldapp.Handlers.Articles.Response;
-using realworldapp.Models;
+using realworldapp.Handlers.Articles.Responses;
 
-namespace realworldapp.Handlers.Articles
+namespace realworldapp.Handlers.Articles.Commands
 {
     public class QueryArticlesFeedCommand : IQueryPagination, IRequest<ArticleListWrapper>
     {

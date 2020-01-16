@@ -8,7 +8,7 @@ using realworldapp.Models;
 
 namespace realworldapp.Infrastructure.Security.Session
 {
-    public class SessionFilter: IAsyncActionFilter
+    public class SessionFilter : IAsyncActionFilter
     {
         private readonly AppDbContext _dbContext;
 

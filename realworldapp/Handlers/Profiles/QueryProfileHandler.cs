@@ -8,7 +8,7 @@ using realworldapp.Models;
 
 namespace realworldapp.Handlers.Profiles
 {
-    public class QueryProfileHandler: IRequestHandler<QueryProfileCommand, ProfileWrapper>
+    public class QueryProfileHandler : IRequestHandler<QueryProfileCommand, ProfileWrapper>
     {
         private AppDbContext _context;
 

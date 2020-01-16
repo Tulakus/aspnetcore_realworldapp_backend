@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-
-namespace realworldapp.Models
+﻿namespace realworldapp.Models
 {
     
     public class User

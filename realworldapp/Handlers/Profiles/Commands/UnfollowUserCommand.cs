@@ -4,7 +4,7 @@ using realworldapp.Handlers.Profiles.Response;
 
 namespace realworldapp.Handlers.Profiles.Commands
 {
-    public class UnfollowUserCommand: IRequest<ProfileWrapper>
+    public class UnfollowUserCommand : IRequest<ProfileWrapper>
     {
         public string Username { get; set; }
 

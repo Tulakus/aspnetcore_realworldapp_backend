@@ -45,7 +45,7 @@ namespace realworldapp
                         new User()
                         {
                             Login = $"user{i}@user.com",
-                            Password = "password", 
+                            Password = "password",
                             Profile = new Profile()
                             {
                                 Username = $"user{i}"
@@ -84,7 +84,7 @@ namespace realworldapp
 
             if (!context.Tags.Any())
             {
-                var tagNames = new []{ "C#", "Javascript", "Typescript", "React", "Programming", "Clean Code"};
+                var tagNames = new[] { "C#", "Javascript", "Typescript", "React", "Programming", "Clean Code" };
                 var tags = tagNames.Select(name => new Tag()
                 {
                     Name = name

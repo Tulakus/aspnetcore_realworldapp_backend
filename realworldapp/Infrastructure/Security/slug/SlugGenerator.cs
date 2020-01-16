@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace realworldapp.Infrastructure.Security
+namespace realworldapp.Infrastructure.Security.slug
 {
     public class SlugGenerator: ISlugGenerator
     {

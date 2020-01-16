@@ -4,7 +4,7 @@ using realworldapp.Handlers.Users.Responses;
 
 namespace realworldapp.Handlers.Users.Commands
 {
-    public class LoginUserCommand: IRequest<UserWrapper>
+    public class LoginUserCommand : IRequest<UserWrapper>
     {
         public LoginUserData User { get; set; }
     }

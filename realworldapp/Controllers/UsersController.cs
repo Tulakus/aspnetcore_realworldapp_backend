@@ -1,11 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using realworldapp.Handlers.Users.Commands;
 using realworldapp.Handlers.Users.Responses;
-using realworldapp.Models;
 
 namespace realworldapp.Controllers
 {
@@ -13,12 +11,10 @@ namespace realworldapp.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IMediator _mediator;
 
-        public UsersController(AppDbContext context, IMediator mediator)
+        public UsersController(IMediator mediator)
         {
-            _context = context;
             _mediator = mediator;
         }
 
@@ -26,14 +22,14 @@ namespace realworldapp.Controllers
         [HttpPost]
         public async Task<UserWrapper> Login([FromBody] LoginUserCommand command)
         {
-            return await _mediator.Send(command, new CancellationToken());
+            return await _mediator.Send(command);
 
         }
 
         [HttpPost]
         public async Task<UserWrapper> Registration([FromBody] RegisterUserCommand command)
         {
-            return await _mediator.Send(command, new CancellationToken());
+            return await _mediator.Send(command);
         }
 
         [Route("~/api/user")]
@@ -41,7 +37,7 @@ namespace realworldapp.Controllers
         [Authorize]
         public async Task<UserWrapper> ModifyItem([FromBody] UpdateUserCommand command)
         {
-            return await _mediator.Send(command, new CancellationToken());
+            return await _mediator.Send(command);
         }
 
         [Route("~/api/user")]
@@ -49,7 +45,7 @@ namespace realworldapp.Controllers
         [Authorize]
         public async Task<UserWrapper> CurrentUser()
         {
-            return await _mediator.Send(new QueryUserInfoCommand(), new CancellationToken());
+            return await _mediator.Send(new QueryUserInfoCommand());
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -25,7 +24,7 @@ namespace realworldapp.Handlers.Comments
             var article = await _context.Articles.FirstAsync(cancellationToken);
 
             if (article == default(Article))
-                throw new NotFoundCommandException(new {Article = ErrorMessages.NotFound});
+                throw new NotFoundCommandException(new { Article = ErrorMessages.NotFound });
 
             var result = _context.Comments.Include(i => i.Article).ThenInclude(i => i.Author).Where(i => i.Article.Slug == command.Slug).ToList();
 

@@ -1,6 +1,8 @@
-﻿namespace realworldapp.Infrastructure.Security
+﻿using realworldapp.Infrastructure.Security.Password;
+
+namespace realworldapp.Infrastructure.Security
 {
-    class PasswordHashProvider: IPasswordHashProvider
+    class PasswordHashProvider : IPasswordHashProvider
     {
         private const int WorkFactor = 15;
         public string HashPassword(string password)

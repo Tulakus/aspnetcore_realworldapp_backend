@@ -1,10 +1,6 @@
-﻿using System;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using FluentValidation.AspNetCore;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,18 +9,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using realworldapp.Infrastructure;
 using realworldapp.Infrastructure.Security;
-using realworldapp.Infrastructure.Security.JWT;
+using realworldapp.Infrastructure.Security.Jwt;
+using realworldapp.Infrastructure.Security.Password;
 using realworldapp.Infrastructure.Security.Session;
+using realworldapp.Infrastructure.Security.slug;
 using realworldapp.Models;
 
 namespace realworldapp
 {
     public class Startup
     {
+        private string JwtTokenExpirationMinutes = "JwtTokenExpirationMinutes";
+        private const string ResourcePath = "Resources";
+        private const string SeedDatabaseKey = "SeedDatabase";
+        private const string ApplicationDatabaseKey = "RealWorldAppDtb";
+        private const string JwtSecretCodeKey = "JwtSecretCode";
+        public const string JwtIssuerKey = "JwtIssuer";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,7 +41,7 @@ namespace realworldapp
         {
             IdentityModelEventSource.ShowPII = true;
             services.AddDbContextPool<AppDbContext>(opt =>
-                opt.UseSqlServer(Configuration.GetConnectionString("RealWorldApp")));
+                opt.UseSqlServer(Configuration.GetConnectionString(ApplicationDatabaseKey)));
             services.AddMvc(options =>
                 {
                     options.Filters.Add(typeof(SessionFilter));
@@ -48,44 +52,24 @@ namespace realworldapp
                     {
                         options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
                     });
+            services.AddOptions();
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidationPipeline();
             services.AddTransactionPipeline();
             services.AddSession();
             services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
             services.AddScoped<IJwt, Jwt>();
+            services.AddScoped(typeof(JwtSettings), typeof(JwtSettings));
             services.AddScoped<ISlugGenerator, SlugGenerator>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-                options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = "muj.pokus.cz",
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ReallySecretCode")),
-                        ValidateLifetime = true,
-                        ValidateAudience = false
-                    };
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = (context) =>
-                        {
-                            var token = context.HttpContext.Request.Headers["Authorization"];// RealWorldApi spec expect token set as Token <valid_token> instead Bearer <valid_token>
-                            if (token.Count > 0 && token[0].StartsWith("Token ", StringComparison.OrdinalIgnoreCase))
-                            {
-                                context.Token = token[0].Substring("Token ".Length).Trim();
-                            }
-
-                            return Task.CompletedTask;
-                        }
-                    };
-                }
-            );
+            services.AddJwtAuthentication(Configuration.GetSection(JwtIssuerKey).Value,
+                Configuration.GetSection(JwtSecretCodeKey).Value,
+                double.Parse(Configuration.GetSection(JwtTokenExpirationMinutes).Value));
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
-            services.AddLocalization(x => x.ResourcesPath = "Resources");
+            services.AddLocalization(x => x.ResourcesPath = ResourcePath);
         }
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -102,9 +86,8 @@ namespace realworldapp
                 app.UseDatabaseErrorPage();
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
-                    if (true) //!serviceScope.ServiceProvider.GetService<AppDbContext>().AllMigrationsApplied())
+                    if (bool.Parse(Configuration.GetSection(SeedDatabaseKey).Value))
                     {
-                        // serviceScope.ServiceProvider.GetService<ApiContext>().Database.Migrate();
                         serviceScope.ServiceProvider.GetService<AppDbContext>().EnsureDatabaseSeeded();
                     }
                 }
@@ -115,8 +98,6 @@ namespace realworldapp
             }
             app.UseHttpsRedirection();
             app.UseMiddleware<ErrorHandlingMiddleware>();
-
-            
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();

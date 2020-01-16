@@ -1,12 +1,12 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using realworldapp.Handlers.Articles.Response;
 using realworldapp.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using realworldapp.Error;
+using realworldapp.Handlers.Articles.Commands;
+using realworldapp.Handlers.Articles.Responses;
 using realworldapp.Infrastructure;
 
 namespace realworldapp.Handlers.Articles
@@ -14,8 +14,8 @@ namespace realworldapp.Handlers.Articles
     public class QueryArticleFeedHandler : IRequestHandler<QueryArticlesFeedCommand, ArticleListWrapper>
     {
         private readonly AppDbContext _context;
-        private  const int DefaultLimit = 20;
-        private  const int DefaultOffset = 0;
+        private const int DefaultLimit = 20;
+        private const int DefaultOffset = 0;
         public QueryArticleFeedHandler(AppDbContext context)
         {
             _context = context;
@@ -31,7 +31,7 @@ namespace realworldapp.Handlers.Articles
 
             var currentUser = await _context.Profiles.Include(i => i.Following)
                 .FirstOrDefaultAsync(i => i.Username == _context.UserInfo.Username, cancellationToken);
-            
+
             if (currentUser == null)
                 throw new NotFoundCommandException(new { User = ErrorMessages.NotFound });
 
@@ -39,13 +39,13 @@ namespace realworldapp.Handlers.Articles
 
             articleQueryable =
                 articleQueryable.Where(article => followedPeople.Any(followed => followed == article.Author.ProfileId));
-            
+
             var result = await articleQueryable.OrderByDescending(i => i.CreatedAt)
                 .Skip(command.Offset == default ? DefaultOffset : command.Offset)
                 .Take(command.Limit == default ? DefaultLimit : command.Limit)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
-            
+
             return new ArticleListWrapper(result);
         }
     }

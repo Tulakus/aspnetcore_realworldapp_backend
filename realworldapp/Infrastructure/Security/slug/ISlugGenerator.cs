@@ -1,4 +1,4 @@
-﻿namespace realworldapp.Infrastructure.Security
+﻿namespace realworldapp.Infrastructure.Security.slug
 {
     public interface ISlugGenerator
     {

@@ -7,8 +7,9 @@ using realworldapp.Error;
 using realworldapp.Handlers.Users.Commands;
 using realworldapp.Handlers.Users.Responses;
 using realworldapp.Infrastructure;
-using realworldapp.Infrastructure.Security;
+using realworldapp.Infrastructure.Security.Jwt;
 using realworldapp.Infrastructure.Security.JWT;
+using realworldapp.Infrastructure.Security.Password;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Users
@@ -33,13 +34,14 @@ namespace realworldapp.Handlers.Users
 
             var user = await _context.Users.FirstOrDefaultAsync(i => i.Login == userData.Email, cancellationToken);
             if (user != default(User))
-                throw new ValidationCommandException(new { User = ErrorMessages.AlreadyExist});
+                throw new ValidationCommandException(new { User = ErrorMessages.AlreadyExist });
 
             user = new User
             {
                 Login = userData.Email,
                 Password = _passwordHashProvider.HashPassword(userData.Password),
-                Profile = new Profile(){
+                Profile = new Profile()
+                {
                     Username = userData.Username,
                     Email = userData.Email
                 },
@@ -49,7 +51,7 @@ namespace realworldapp.Handlers.Users
             user.Token = _jwtService.GenerateToken(claims);
             _context.Users.Add(user);
             await _context.SaveChangesAsync(cancellationToken);
-            
+
             return new UserWrapper(user);
         }
 
@@ -67,9 +69,9 @@ namespace realworldapp.Handlers.Users
         {
             var commandUser = command.User;
             var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Login == commandUser.Email, cancellationToken);
-            
+
             if (user is default(User))
-                throw new NotFoundCommandException(new { User = ErrorMessages.NotFound});
+                throw new NotFoundCommandException(new { User = ErrorMessages.NotFound });
 
             if (!_passwordHashProvider.VerifyPassword(command.User.Password, user.Password))
                 return null;
@@ -88,8 +90,6 @@ namespace realworldapp.Handlers.Users
         {
             var commandUser = command.User;
             var currentUser = _context.UserInfo;
-            if (currentUser.Username != command.User.Username)
-                throw new ForbiddenCommandException(new { User = ErrorMessages.NoPrivileges});
 
             var user = await _context.Users.Include(i => i.Profile).FirstOrDefaultAsync(i => i.Profile.Username == currentUser.Username, cancellationToken);
 
@@ -121,10 +121,10 @@ namespace realworldapp.Handlers.Users
 
             var user = await _context.Users.AsNoTracking().Include(i => i.Profile)
                 .FirstOrDefaultAsync(i => i.Profile.Username == currentUser, cancellationToken);
-            
+
             if (user is default(User))
                 throw new NotFoundCommandException(new { User = ErrorMessages.NotFound });
-            
+
             return new UserWrapper(user);
         }
     }

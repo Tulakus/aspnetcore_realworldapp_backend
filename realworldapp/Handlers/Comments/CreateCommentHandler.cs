@@ -11,7 +11,7 @@ using realworldapp.Models;
 
 namespace realworldapp.Handlers.Comments
 {
-    public class CreateCommentHandler: IRequestHandler<CreateCommentCommand, CommentWrapper>
+    public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, CommentWrapper>
     {
         private readonly AppDbContext _context;
 

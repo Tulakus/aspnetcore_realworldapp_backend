@@ -2,7 +2,7 @@
 using System.Linq;
 using realworldapp.Models;
 
-namespace realworldapp.Handlers.Articles.Response
+namespace realworldapp.Handlers.Articles.Responses
 {
     public class ArticleListWrapper
     {

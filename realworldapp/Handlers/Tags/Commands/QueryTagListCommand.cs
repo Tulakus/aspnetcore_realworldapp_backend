@@ -5,6 +5,6 @@ namespace realworldapp.Handlers.Tags.Commands
 {
     public class QueryTagListCommand : IRequest<TagListWrapper>
     {
-        
+
     }
 }

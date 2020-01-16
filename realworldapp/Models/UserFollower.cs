@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace realworldapp.Models
+﻿namespace realworldapp.Models
 {
     public class UserFollower
     {

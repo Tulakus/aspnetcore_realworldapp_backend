@@ -4,7 +4,7 @@ using realworldapp.Handlers.Users.Responses;
 
 namespace realworldapp.Handlers.Users.Commands
 {
-    public class RegisterUserCommand: IRequest<UserWrapper>
+    public class RegisterUserCommand : IRequest<UserWrapper>
     {
         public UserData User { get; set; }
     }
@@ -25,7 +25,7 @@ namespace realworldapp.Handlers.Users.Commands
         }
     }
 
-    public class UserDataValidator: AbstractValidator<UserData>
+    public class UserDataValidator : AbstractValidator<UserData>
     {
         public UserDataValidator()
         {

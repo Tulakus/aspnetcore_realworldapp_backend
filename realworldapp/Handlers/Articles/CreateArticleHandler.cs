@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using realworldapp.Handlers.Articles.Commands;
-using realworldapp.Infrastructure.Security;
+using realworldapp.Handlers.Articles.Responses;
+using realworldapp.Infrastructure.Security.slug;
 using realworldapp.Models;
 
 namespace realworldapp.Handlers.Articles

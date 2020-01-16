@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using FluentValidation;
-using MediatR;
-using realworldapp.Models;
+﻿using MediatR;
+using realworldapp.Handlers.Articles.Responses;
 
 namespace realworldapp.Handlers.Articles.Commands
 {

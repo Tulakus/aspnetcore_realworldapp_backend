@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using realworldapp.Handlers.Tags.Response;
-using realworldapp.Handlers.Users.Responses;
+using realworldapp.Handlers.Profiles.Response;
+using realworldapp.Models;
 
-namespace realworldapp.Models
+namespace realworldapp.Handlers.Articles.Responses
 {
     public class ArticleDetailDto
     {
