@@ -10,9 +10,9 @@ namespace realworldapp.Handlers.Articles.Commands
     }
 
 
-    public class CreateArticleCommandCommandValidator : AbstractValidator<CreateArticleCommand>
+    public class CreateArticleCommandValidator : AbstractValidator<CreateArticleCommand>
     {
-        public CreateArticleCommandCommandValidator()
+        public CreateArticleCommandValidator()
         {
             RuleFor(c => c.Article).SetValidator(new ArticleBaseValidator<ArticleBase>());
         }

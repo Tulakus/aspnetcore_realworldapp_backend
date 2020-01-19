@@ -1,4 +1,4 @@
-﻿namespace realworldapp.Infrastructure.Security.JWT
+﻿namespace realworldapp.Infrastructure.Security.Jwt
 {
     public class CustomClaims
     {

@@ -1,6 +1,4 @@
-﻿using realworldapp.Infrastructure.Security.Password;
-
-namespace realworldapp.Infrastructure.Security
+﻿namespace realworldapp.Infrastructure.Security.Password
 {
     class PasswordHashProvider : IPasswordHashProvider
     {

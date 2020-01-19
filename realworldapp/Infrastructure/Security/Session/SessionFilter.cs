@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
-using realworldapp.Infrastructure.Security.JWT;
+using realworldapp.Infrastructure.Security.Jwt;
 using realworldapp.Models;
 
 namespace realworldapp.Infrastructure.Security.Session

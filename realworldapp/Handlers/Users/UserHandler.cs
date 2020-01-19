@@ -8,7 +8,6 @@ using realworldapp.Handlers.Users.Commands;
 using realworldapp.Handlers.Users.Responses;
 using realworldapp.Infrastructure;
 using realworldapp.Infrastructure.Security.Jwt;
-using realworldapp.Infrastructure.Security.JWT;
 using realworldapp.Infrastructure.Security.Password;
 using realworldapp.Models;
 

@@ -1,4 +1,4 @@
-﻿namespace realworldapp.Infrastructure
+﻿namespace realworldapp.Error
 {
     public class ErrorMessages
     {
