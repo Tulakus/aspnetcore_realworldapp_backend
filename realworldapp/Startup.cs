@@ -104,13 +104,6 @@ namespace realworldapp
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                {
-                    if (Configuration.GetValue<bool>(SeedDatabaseKey)) 
-                    {
-                        serviceScope.ServiceProvider.GetService<AppDbContext>().EnsureDatabaseSeeded();
-                    }
-                }
             }
             else
             {
