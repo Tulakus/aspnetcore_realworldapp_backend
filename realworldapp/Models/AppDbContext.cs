@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using realworldapp.Infrastructure.Security.Session;
@@ -9,7 +10,7 @@ namespace realworldapp.Models
     {
         private IDbContextTransaction _currentTransaction;
 
-        public AppDbContext(DbContextOptions<AppDbContext> options)
+        public AppDbContext(DbContextOptions options)
             : base(options)
         {
         }
@@ -104,6 +105,41 @@ namespace realworldapp.Models
             }
         }
 
+        public async Task BeginTransactionAsync()
+        {
+            if (_currentTransaction != null)
+            {
+                return;
+            }
+
+            _currentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false);
+        }
+
+        // todo: this is pseudo async -> make full async in dotnet 3.1
+        public async Task CommitTransactionAsync()
+        {
+            try
+            {
+                await SaveChangesAsync().ConfigureAwait(false);
+
+                _currentTransaction?.Commit();
+            }
+            catch
+            {
+                RollbackTransaction();
+                throw;
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
+        }
+
+        // todo: make async in  EF core 3.1
         public void RollbackTransaction()
         {
             try
