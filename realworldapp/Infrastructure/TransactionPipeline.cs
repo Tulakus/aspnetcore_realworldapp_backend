@@ -21,11 +21,11 @@ namespace realworldapp.Infrastructure
 
             try
             {
-                _context.BeginTransaction();
+                await _context.BeginTransactionAsync();
 
                 result = await next();
 
-               _context.CommitTransaction();
+               await _context.CommitTransactionAsync();
             }
             catch (Exception)
             {
