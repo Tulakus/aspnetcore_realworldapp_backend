@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -22,12 +23,13 @@ namespace realworldapp
 {
     public class Startup
     {
-        private string JwtTokenExpirationMinutes = "JwtTokenExpirationMinutes";
-        private const string ResourcePath = "Resources";
-        private const string SeedDatabaseKey = "SeedDatabase";
-        private const string ApplicationDatabaseKey = "RealWorldAppDtb";
-        private const string JwtSecretCodeKey = "JwtSecretCode";
+        public const string JwtTokenExpirationMinutes = "JwtTokenExpirationMinutes";
+        public const string ResourcePath = "Resources";
+        public const string SeedDatabaseKey = "SeedDatabase";
+        public const string ApplicationDatabaseKey = "RealWorldAppDtb";
+        public const string JwtSecretCodeKey = "JwtSecretCode";
         public const string JwtIssuerKey = "JwtIssuer";
+        public const string DatabaseTypeKey = "DatabaseType";
 
         public Startup(IConfiguration configuration)
         {
@@ -39,9 +41,24 @@ namespace realworldapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString(ApplicationDatabaseKey) ?? "Filename=realworld.db";
             IdentityModelEventSource.ShowPII = true;
             services.AddDbContextPool<AppDbContext>(opt =>
-                opt.UseSqlServer(Configuration.GetConnectionString(ApplicationDatabaseKey)));
+            {
+                var databaseType = Configuration.GetValue<string>(DatabaseTypeKey)?.ToLower().Trim() ?? "sqlite";
+                switch(databaseType)
+                {
+                    case "sqlite":
+                        opt.UseSqlite(connectionString);
+                        break;
+                    case "sqlserver":
+                        opt.UseSqlServer(connectionString);
+                        break;
+                    default:
+                        throw new Exception("Database provider unknown. Please check configuration");
+                }
+
+            });
             services.AddMvc(options =>
                 {
                     options.Filters.Add(typeof(SessionFilter));
@@ -62,9 +79,12 @@ namespace realworldapp
             services.AddScoped(typeof(JwtSettings), typeof(JwtSettings));
             services.AddScoped<ISlugGenerator, SlugGenerator>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddJwtAuthentication(Configuration.GetSection(JwtIssuerKey).Value,
-                Configuration.GetSection(JwtSecretCodeKey).Value,
-                double.Parse(Configuration.GetSection(JwtTokenExpirationMinutes).Value));
+
+            var jwtIssuer = Configuration.GetValue<string>(JwtIssuerKey);
+            var jwtSecretCode = Configuration.GetValue<string>(JwtSecretCodeKey);
+            var jwtTokenExpirationMinutes = Configuration.GetValue<double>(JwtTokenExpirationMinutes);
+
+            services.AddJwtAuthentication(jwtIssuer, jwtSecretCode, jwtTokenExpirationMinutes);
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
             services.AddLocalization(x => x.ResourcesPath = ResourcePath);
         }
@@ -86,7 +106,7 @@ namespace realworldapp
                 app.UseDatabaseErrorPage();
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
-                    if (bool.Parse(Configuration.GetSection(SeedDatabaseKey).Value))
+                    if (Configuration.GetValue<bool>(SeedDatabaseKey)) 
                     {
                         serviceScope.ServiceProvider.GetService<AppDbContext>().EnsureDatabaseSeeded();
                     }
